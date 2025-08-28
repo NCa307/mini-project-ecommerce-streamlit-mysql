@@ -1,4 +1,5 @@
-<img width="1614" height="1318" alt="image" src="https://github.com/user-attachments/assets/e89faaaf-5ae6-4ac3-a634-9e129ee5b14e" />
+<img width="1528" height="1216" alt="image" src="https://github.com/user-attachments/assets/217d153c-a8a1-4fdb-8ac9-968ee8634037" />
+
 
 # Mini-Project-E-commerce-Store-with-Streamlit-MySQL
 **Mini Project Week 8 Ironhack Data Analytics Bootcamp: E-commerce Store with Streamlit + MySQL**
