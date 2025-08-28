@@ -1,0 +1,66 @@
+Session states just for "place order" and "quantity"
+
+def place_order(engine):
+    st.subheader("Place an Order")
+
+    if not st.session_state.get("logged_in", False):
+        st.warning("Please log in first to place an order.")
+        return
+
+    with engine.connect() as connection:
+        # Pick a product
+        choice = st.selectbox("Choose a product:", [
+            "iPhone 15 Pro","Samsung Galaxy S24","MacBook Air M2","iPad Air",
+            "Wireless Headphones","Smart Watch","Nike Air Max Shoes",
+            "Levi's Jeans","Cotton T-Shirt","Winter Jacket",
+            "KitchenAid Mixer","Coffee Maker","Air Fryer",
+            "Harry Potter Book Set","Yoga Mat"
+        ])
+
+        # Get product details
+        txt = '''SELECT idproducts, stock, price 
+                 FROM ecommerce_db.products 
+                 WHERE product_name = :choice;'''
+        query = text(txt)
+        result = connection.execute(query, {"choice": choice})
+        product_id, stock, price = result.fetchone()
+
+        # store quantity in session state
+        if "quantity" not in st.session_state:
+            st.session_state.quantity = 1  # default
+
+        quantity = st.number_input(
+            "Order Quantity",
+            min_value=1,
+            max_value=stock,
+            step=1,
+            key="quantity"  # connects number input to session state
+        )
+
+        # handle Place Order with session state
+        if st.button("Place Order", key="place_order_btn"):
+            st.session_state.placed = True  # remember button was clicked
+
+            # Save to DB
+            txt = '''INSERT INTO order_items (orders_idorders, products_idproducts, quantity, unit_price)
+                     VALUES (:order_id, :product_id, :quantity, :unit_price);'''
+            query = text(txt)
+            connection.execute(query, {
+                "order_id": st.session_state.order_id,
+                "product_id": product_id,
+                "quantity": quantity,
+                "unit_price": price
+            })
+
+            # Update stock
+            new_stock = stock - quantity
+            txt = '''UPDATE ecommerce_db.products SET stock = :new_stock WHERE idproducts = :product_id;'''
+            query = text(txt)
+            connection.execute(query, {"new_stock": new_stock, "product_id": product_id})
+
+            connection.commit()
+            st.success(f"Order placed successfully for {quantity} x {choice}!")
+
+    # show a confirmation if already placed
+    if st.session_state.get("placed", False):
+        st.info(f"You already placed an order for {st.session_state.quantity} items.")
