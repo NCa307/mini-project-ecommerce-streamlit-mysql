@@ -39,14 +39,12 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `ecommerce_db`.`orders` (
   `idorders` INT NOT NULL AUTO_INCREMENT,
   `order_date` DATETIME NULL DEFAULT NULL,
-  `total_order_amount` DECIMAL(10,2) NOT NULL,
-  `billing_address` VARCHAR(45) NULL DEFAULT NULL,
-  `payment_method` VARCHAR(45) NULL DEFAULT NULL,
-  `customers_idcustomers` INT NOT NULL,
+  `total_order_amount` DECIMAL(10,2) NULL,
+  `customer_id` INT NOT NULL,
   PRIMARY KEY (`idorders`),
-  INDEX `fk_orders_customers1_idx` (`customers_idcustomers` ASC) VISIBLE,
+  INDEX `fk_orders_customers1_idx` (`customer_id` ASC) VISIBLE,
   CONSTRAINT `fk_orders_customers1`
-    FOREIGN KEY (`customers_idcustomers`)
+    FOREIGN KEY (`customer_id`)
     REFERENCES `ecommerce_db`.`customers` (`idcustomers`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
